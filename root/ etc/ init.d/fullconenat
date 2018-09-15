@@ -15,6 +15,7 @@ start(){
 	sleep 3
 		if [ $all_enable -eq 0 ]; then
 			sed -i '/FULLCONENAT/d' /etc/firewall.user
+			sed -i '/zone_wan_postrouting -j MASQUERADE/d' /etc/firewall.user
 			echo "iptables -t nat -A zone_wan_prerouting -j FULLCONENAT" >> /etc/firewall.user
 			echo "iptables -t nat -A zone_wan_postrouting -s $fullconenat_ip -j FULLCONENAT" >> /etc/firewall.user
 			echo "iptables -t nat -A zone_wan_postrouting -j MASQUERADE" >> /etc/firewall.user

@@ -11,12 +11,12 @@ start(){
 	all_enable=$(uci get fullconenat.config.all_enabled 2>/dev/null)
 	fullconenat_ip=$(uci get fullconenat.config.fullconenat_ip 2>/dev/null)
 	if [ $enable -eq 1 ]; then
-	insmod xt_FULLCONENAT
-	sleep 3
 	iptables -t nat -D zone_wan_prerouting -j FULLCONENAT
 	iptables -t nat -D zone_wan_postrouting -s $fullconenat_ip -j FULLCONENAT
 	iptables -t nat -D zone_wan_postrouting -j MASQUERADE
 	iptables -t nat -D zone_wan_postrouting -j FULLCONENAT
+	insmod xt_FULLCONENAT
+	sleep 3
 	sed -i '/FULLCONENAT/d' /etc/firewall.user
 	sed -i '/zone_wan_postrouting -j MASQUERADE/d' /etc/firewall.user
 		if [ $all_enable -eq 0 ]; then

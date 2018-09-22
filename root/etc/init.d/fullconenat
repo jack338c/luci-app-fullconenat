@@ -5,6 +5,8 @@ START=99
 
 re=0
 
+CRON_FILE=/etc/crontabs/root
+
 start(){
 	echo "enable"
 	enable=$(uci get fullconenat.config.enabled 2>/dev/null)
@@ -16,7 +18,7 @@ start(){
 	iptables -t nat -D zone_wan_postrouting -j MASQUERADE
 	iptables -t nat -D zone_wan_postrouting -j FULLCONENAT
 	insmod xt_FULLCONENAT
-	sleep 5
+	sleep 3
 	sed -i '/FULLCONENAT/d' /etc/firewall.user
 	sed -i '/zone_wan_postrouting -j MASQUERADE/d' /etc/firewall.user
 		if [ $all_enable -eq 0 ]; then
@@ -35,6 +37,7 @@ start(){
 				/etc/init.d/firewall restart
 			fi 
 	fi
+	add_cron
 }
 
 stop(){
@@ -58,6 +61,7 @@ stop(){
 			/etc/init.d/firewall restart
         fi 
 	fi
+	del_cron
 }
 
 
@@ -66,4 +70,18 @@ restart(){
 	stop
 	start
 	/etc/init.d/firewall restart
+}
+
+add_cron()
+{
+	sed -i '/fullconenat_watchdog.log/d' $CRON_FILE
+	echo '0 */1 * * * /etc/fullconenat/fullconenat-watchdog >> /tmp/fullconenat_watchdog.log 2>&1' >> $CRON_FILE
+	echo '0 1 * * 0 echo "" > /tmp/fullconenat_watchdog.log' >> $CRON_FILE
+	crontab $CRON_FILE
+}
+
+del_cron()
+{
+	sed -i '/fullconenat_watchdog.log/d' $CRON_FILE
+	/etc/init.d/cron restart
 }

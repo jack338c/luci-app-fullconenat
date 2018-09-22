@@ -1,0 +1,17 @@
+#!/bin/sh
+
+LOGTIME=$(date "+%Y-%m-%d %H:%M:%S")
+
+/usr/bin/wget --spider --quiet --tries=1 --timeout=3 www.qq.com
+
+if [ "$?" == "0" ]; then
+	echo '['$LOGTIME'] fullconenat No Problem.'
+else
+	/usr/bin/wget --spider --quiet --tries=1 --timeout=3 www.baidu.com
+	if [ "$?" == "0" ]; then
+		echo '['$LOGTIME'] Problem decteted, restarting fullconenat...'
+		/etc/init.d/fullconenat restart
+	else
+		echo '['$LOGTIME'] Network Problem. Do nothing.'
+	fi
+fi

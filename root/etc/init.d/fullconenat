@@ -17,6 +17,7 @@ start(){
 	iptables -t nat -D zone_wan_postrouting -s $fullconenat_ip -j FULLCONENAT
 	iptables -t nat -D zone_wan_postrouting -j MASQUERADE
 	iptables -t nat -D zone_wan_postrouting -j FULLCONENAT
+	sleep 3
 	insmod xt_FULLCONENAT
 	sleep 3
 	sed -i '/FULLCONENAT/d' /etc/firewall.user

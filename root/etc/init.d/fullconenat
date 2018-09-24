@@ -76,7 +76,7 @@ restart(){
 add_cron()
 {
 	sed -i '/fullconenat_watchdog.log/d' $CRON_FILE
-	echo '0 */1 * * * /etc/fullconenat/fullconenat-watchdog >> /tmp/fullconenat_watchdog.log 2>&1' >> $CRON_FILE
+	echo '0,2,12,22,32,42,52 * * * * /etc/fullconenat/fullconenat-watchdog >> /tmp/fullconenat_watchdog.log 2>&1' >> $CRON_FILE
 	echo '0 1 * * 0 echo "" > /tmp/fullconenat_watchdog.log' >> $CRON_FILE
 	crontab $CRON_FILE
 }

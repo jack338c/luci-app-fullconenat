@@ -7,15 +7,20 @@ echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip
 ip=$(cat /etc/fullconenat/fullconenat-ip|sed -n '1p')
 ip1=$(cat /etc/fullconenat/fullconenat-ip1|sed -n '1p')
 
-if [[ $(echo $ip|tr '.' '+'|bc) -eq $(echo $ip1|tr '.' '+'|bc) ]] ; then
-	echo '['$LOGTIME'] fullconenat No Problem.'
-	sed -i '1,3d' /etc/fullconenat/fullconenat-ip
-	sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
-	echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
+ubus call network.interface.wan status | grep "address" | grep -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}'
+if [ "$?" == "0" ]; then
+	if [[ $(echo $ip|tr '.' '+'|bc) -eq $(echo $ip1|tr '.' '+'|bc) ]] ; then
+		echo '['$LOGTIME'] fullconenat No Problem.'
+		sed -i '1,3d' /etc/fullconenat/fullconenat-ip
+		sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
+		echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
+	else
+		echo '['$LOGTIME'] Problem decteted, restarting fullconenat...'
+		sed -i '1,3d' /etc/fullconenat/fullconenat-ip
+		sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
+		echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
+		/etc/init.d/fullconenat restart
+	fi
 else
-	echo '['$LOGTIME'] Problem decteted, restarting fullconenat...'
-	sed -i '1,3d' /etc/fullconenat/fullconenat-ip
-	sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
-	echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
-	/etc/init.d/fullconenat restart
+	echo '['$LOGTIME'] Waiting for network connection.'
 fi

@@ -37,8 +37,11 @@ start(){
 				echo $re
 				/etc/init.d/firewall restart
 			fi 
-	fi
 	add_cron
+	wan_ip=$(ubus call network.interface.wan status | grep "address" | grep -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}')
+	sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
+	echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
+	fi
 }
 
 stop(){
@@ -61,11 +64,8 @@ stop(){
 			echo $re
 			/etc/init.d/firewall restart
         fi 
-	fi
 	del_cron
-	wan_ip=$(ubus call network.interface.wan status | grep "address" | grep -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}')
-	sed -i '1,6d' /etc/fullconenat/fullconenat-ip1
-	echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
+	fi
 }
 
 

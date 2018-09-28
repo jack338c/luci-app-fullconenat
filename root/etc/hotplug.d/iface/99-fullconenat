@@ -1,0 +1,14 @@
+#!/bin/sh
+# Copyright (C) 2007 OpenWrt.org
+
+/etc/init.d/fullconenat enabled && {
+
+	[ "$ACTION" = "ifup" ] && {
+		/etc/init.d/fullconenat start
+	}
+
+	[ "$ACTION" = "ifdown" ] && {
+		/etc/init.d/fullconenat stop
+	}
+	
+}

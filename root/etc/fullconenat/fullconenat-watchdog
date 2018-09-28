@@ -22,7 +22,7 @@ if [ "$?" == "0" ]; then
 		echo '['$LOGTIME'] Problem decteted, restarting fullconenat...'
 		/etc/init.d/fullconenat restart
 	fi
-	else
+else
 	echo '['$LOGTIME'] Waiting for network connection.'
 fi
 

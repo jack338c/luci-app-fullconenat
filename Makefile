@@ -5,8 +5,8 @@ include $(TOPDIR)/rules.mk
 LUCI_TITLE:=LuCI support for FullConeNat
 LUCI_DEPENDS:=+iptables-mod-fullconenat
 LUCI_PKGARCH:=all
-PKG_VERSION:=1.45
-PKG_RELEASE:=7
+PKG_VERSION:=1.46
+PKG_RELEASE:=10
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

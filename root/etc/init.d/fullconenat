@@ -8,11 +8,11 @@ re=0
 CRON_FILE=/etc/crontabs/root
 
 start(){
-	echo "enable"
 	enable=$(uci get fullconenat.config.enabled 2>/dev/null)
 	all_enable=$(uci get fullconenat.config.all_enabled 2>/dev/null)
 	fullconenat_ip=$(uci get fullconenat.config.fullconenat_ip 2>/dev/null)
 	if [ $enable -eq 1 ]; then
+	echo "enable"
 	iptables -t nat -D zone_wan_prerouting -j FULLCONENAT
 	iptables -t nat -D zone_wan_postrouting -s $fullconenat_ip -j FULLCONENAT
 	iptables -t nat -D zone_wan_postrouting -j MASQUERADE
@@ -39,13 +39,12 @@ start(){
 			fi 
 	add_cron
 	wan_ip=$(ubus call network.interface.wan status | grep "address" | grep -oE '[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}')
-	sed -i '1,3d' /etc/fullconenat/fullconenat-ip1
+	sed -i '1,100d' /etc/fullconenat/fullconenat-ip1
 	echo "$wan_ip" >> /etc/fullconenat/fullconenat-ip1
 	fi
 }
 
 stop(){
-	echo "stop"
 	fullconenat_ip=$(uci get fullconenat.config.fullconenat_ip 2>/dev/null)
     enable=$(uci get fullconenat.config.enabled 2>/dev/null)	
     if [ $enable -eq 0 ]; then
@@ -79,7 +78,8 @@ restart(){
 add_cron()
 {
 	sed -i '/fullconenat_watchdog.log/d' $CRON_FILE
-	echo '*/5 * * * * /etc/fullconenat/fullconenat-watchdog >> /tmp/fullconenat_watchdog.log 2>&1' >> $CRON_FILE
+	echo '*/10 * * * * /etc/fullconenat/fullconenat-watchdog >> /tmp/fullconenat_watchdog.log 2>&1' >> $CRON_FILE
+	echo '0 1 * * 0 echo "" > /tmp/fullconenat_watchdog.log' >> $CRON_FILE
 	crontab $CRON_FILE
 }
 
